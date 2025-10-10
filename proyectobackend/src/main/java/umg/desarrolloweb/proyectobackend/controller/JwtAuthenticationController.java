@@ -50,7 +50,7 @@ public class JwtAuthenticationController {
             return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException e) {
-            System.out.pringln("usuario no valido");
+            System.out.println("usuario no valido");
             throw new RuntimeException("Usuario o password inválido"); 
         }
     }

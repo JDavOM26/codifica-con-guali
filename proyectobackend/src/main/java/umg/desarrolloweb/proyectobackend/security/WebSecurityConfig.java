@@ -60,7 +60,7 @@ public class WebSecurityConfig {
             )
             .authorizeHttpRequests(authorizeRequests ->
                 authorizeRequests
-                    .requestMatchers("/api/noauth/**").permitAll()
+                    .requestMatchers("/api/noauth/**", "/favicon.ico").permitAll()
                     .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll() 
                     .anyRequest().authenticated()
             );

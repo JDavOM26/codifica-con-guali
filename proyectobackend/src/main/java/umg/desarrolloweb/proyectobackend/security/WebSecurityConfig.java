@@ -72,7 +72,7 @@ public class WebSecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("https://codifica-con-guali.onrender.com","http://127.0.0.1:5500","https://codifica-con-guali-v1-d5qnujh2l-jose-david-olivas-projects.vercel.app"));
+        configuration.setAllowedOrigins(Arrays.asList("https://codifica-con-guali-v1.vercel.app","https://codifica-con-guali.onrender.com","http://127.0.0.1:5500","https://codifica-con-guali-v1-d5qnujh2l-jose-david-olivas-projects.vercel.app"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
         configuration.setAllowCredentials(true);

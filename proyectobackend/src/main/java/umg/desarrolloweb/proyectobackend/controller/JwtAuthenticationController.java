@@ -46,11 +46,11 @@ public class JwtAuthenticationController {
             response.setToken(jwt);
             response.setIdUser(userTemp.getIdUser());
 
-           
+           System.out.println("usuario no valido");
             return ResponseEntity.ok(response);
 
         } catch (BadCredentialsException e) {
-            System.out.println("usuario no valido");
+            
             throw new RuntimeException("Usuario o password inválido"); 
         }
     }

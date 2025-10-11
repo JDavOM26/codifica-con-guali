@@ -45,7 +45,7 @@ public ResponseEntity<?> enterUsageLog(@RequestParam EventType eventType, HttpSe
         newLog.setEventType(eventType);
 
         // Guardar en la base de datos
-        usageLogRepository.save(newLog);
+        usageLogRepository.saveAndFlush(newLog);
 
         // Devolver respuesta exitosa
         return ResponseEntity.ok("Usage log entered successfully");

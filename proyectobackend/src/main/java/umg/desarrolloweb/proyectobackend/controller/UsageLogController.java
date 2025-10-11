@@ -1,5 +1,7 @@
 package umg.desarrolloweb.proyectobackend.controller;
 
+import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +31,8 @@ public class UsageLogController {
     }
 
     @PostMapping("/noauth/enter-usage-log")
-    public ResponseEntity<?> enterUsageLog(@RequestParam EventType eventType, HttpServletRequest request) {
+public ResponseEntity<?> enterUsageLog(@RequestParam EventType eventType, HttpServletRequest request) {
+    try {
         // Validar que el eventType no sea nulo
         if (eventType == null) {
             return ResponseEntity.badRequest().body("Event type is required");
@@ -46,7 +49,22 @@ public class UsageLogController {
 
         // Devolver respuesta exitosa
         return ResponseEntity.ok("Usage log entered successfully");
+        
+    } catch (IllegalArgumentException e) {
+        // Error de validación o argumento inválido
+        return ResponseEntity.badRequest().body("Invalid data: " + e.getMessage());
+        
+    } catch (DataAccessException e) {
+        // Error de base de datos (conexión, constraint, etc.)
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Database error: Unable to save usage log");
+        
+    } catch (Exception e) {
+        // Cualquier otro error inesperado
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("An unexpected error occurred: " + e.getMessage());
     }
+}
     
     
     @PostMapping("/auth/view-stats")  // Cambiar de GET a POST

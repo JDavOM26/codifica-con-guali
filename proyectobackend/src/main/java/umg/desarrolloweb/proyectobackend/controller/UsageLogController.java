@@ -77,8 +77,9 @@ public ResponseEntity<?> enterUsageLog(@RequestParam EventType eventType, HttpSe
         }
 
         // Convert LocalDate to LocalDateTime (start of day and end of day)
-        LocalDateTime startDateTime = dateRange.getRangoInferior().atStartOfDay();
-        LocalDateTime endDateTime = dateRange.getRangoSuperior().atTime(23, 59, 59);
+      LocalDateTime startDateTime = dateRange.getRangoInferior().atStartOfDay();
+LocalDateTime endDateTime = dateRange.getRangoSuperior().atTime(23, 59, 59, 999_999_999);
+
 
         // Query the repository
         List<Object[]> results = usageLogRepository.countEventsByTypeInDateRange(startDateTime, endDateTime);

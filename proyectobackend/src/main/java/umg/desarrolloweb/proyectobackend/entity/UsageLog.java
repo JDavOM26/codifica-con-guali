@@ -1,6 +1,7 @@
 package umg.desarrolloweb.proyectobackend.entity;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,7 +22,7 @@ public class UsageLog {
     private Integer idUsageLog;
 
     @Column(name = "timestamp", nullable = false)
-    private LocalDateTime timestamp; 
+    private LocalDate timestamp; 
 
     @Column(name = "ip_address", nullable = true) 
     private String ipAddress;

@@ -68,7 +68,7 @@ public class UsageLogController {
 		}
 	}
 
-	@PostMapping("/auth/view-stats") 
+	@PostMapping("/admin/view-stats") 
 	public ResponseEntity<Map<String, Object>> viewUsageStats(@RequestBody DateRangeRequest dateRange) {
 
 		

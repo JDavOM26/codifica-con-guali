@@ -37,12 +37,12 @@ public class TrackController {
 	
 	
 	
-	@GetMapping("/auth/get-track-user")
+	@GetMapping("/admin/get-track-user")
 	public List<Track> getTracksByUser(@RequestParam Integer idUser) {
 		return trackRepository.findByIdUser(idUser);
 	}
 	
-	@PostMapping("/auth/save-track")
+	@PostMapping("/admin/save-track")
 	public ResponseEntity<Track> saveTrack(@Validated @RequestBody TrackDto trackDto) {
         try {
             Track track;
@@ -79,7 +79,7 @@ public class TrackController {
     }
 	
 	
-	@DeleteMapping("/auth/delete-track")
+	@DeleteMapping("/admin/delete-track")
 	public void deleteTrack(@RequestParam Integer idTrack) {
 		 trackRepository.deleteById(idTrack);	
 	}

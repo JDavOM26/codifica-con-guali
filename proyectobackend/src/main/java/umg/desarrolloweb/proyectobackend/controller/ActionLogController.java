@@ -15,7 +15,7 @@ import umg.desarrolloweb.proyectobackend.entity.ActionLog;
 import umg.desarrolloweb.proyectobackend.repository.ActionLogRepository;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/admin")
 public class ActionLogController {
 
 	private final ActionLogRepository actionLogRepository;

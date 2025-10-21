@@ -15,7 +15,7 @@ import umg.desarrolloweb.proyectobackend.entity.User;
 import umg.desarrolloweb.proyectobackend.repository.UserRepository;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api/admin")
 public class UserController {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
@@ -29,7 +29,7 @@ public class UserController {
 	public List<User> getAllUsers() {
 		return userRepository.findAll();
 	}
-   //PARA CREAR Y ACTUALIZAR
+
 	@PostMapping("/save-user")
 	public User saveUser(@RequestBody User user) {
 		if(user.getIdUser()==null) {

@@ -16,6 +16,8 @@ import umg.desarrolloweb.proyectobackend.entity.UsageLog.EventType;
 import umg.desarrolloweb.proyectobackend.repository.UsageLogRepository;
 
 import jakarta.servlet.http.HttpServletRequest;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -24,85 +26,84 @@ import java.util.Map;
 @RequestMapping("/api")
 public class UsageLogController {
 
-    private final UsageLogRepository usageLogRepository;
+	private final UsageLogRepository usageLogRepository;
 
-    public UsageLogController(UsageLogRepository usageLogRepository) {
-        this.usageLogRepository = usageLogRepository;
-    }
+	public UsageLogController(UsageLogRepository usageLogRepository) {
+		this.usageLogRepository = usageLogRepository;
+	}
 
-    @PostMapping("/noauth/enter-usage-log")
-public ResponseEntity<?> enterUsageLog(@RequestParam EventType eventType, HttpServletRequest request) {
-    try {
-        // Validar que el eventType no sea nulo
-        if (eventType == null) {
-            return ResponseEntity.badRequest().body("Event type is required");
-        }
+	@PostMapping("/noauth/enter-usage-log")
+	public ResponseEntity<?> enterUsageLog(@RequestParam EventType eventType, HttpServletRequest request) {
+		try {
+			
+			if (eventType == null) {
+				return ResponseEntity.badRequest().body("Event type is required");
+			}
 
-        // Crear un nuevo log
-        UsageLog newLog = new UsageLog();
-        newLog.setIpAddress(request.getRemoteAddr()); // Obtener IP del cliente
-        newLog.setTimestamp(LocalDateTime.now()); // Establecer la hora actual
-        newLog.setEventType(eventType);
+			
+			UsageLog newLog = new UsageLog();
+			newLog.setIpAddress(request.getRemoteAddr()); 
+			newLog.setTimestamp(LocalDate.now());
+			newLog.setEventType(eventType);
 
-        // Guardar en la base de datos
-        usageLogRepository.saveAndFlush(newLog);
+			
+			usageLogRepository.saveAndFlush(newLog);
 
-        // Devolver respuesta exitosa
-        return ResponseEntity.ok("Usage log entered successfully");
-        
-    } catch (IllegalArgumentException e) {
-        // Error de validación o argumento inválido
-        return ResponseEntity.badRequest().body("Invalid data: " + e.getMessage());
-        
-    } catch (DataAccessException e) {
-        // Error de base de datos (conexión, constraint, etc.)
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("Database error: Unable to save usage log");
-        
-    } catch (Exception e) {
-        // Cualquier otro error inesperado
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body("An unexpected error occurred: " + e.getMessage());
-    }
-}
-    
-    
-    @PostMapping("/auth/view-stats")  // Cambiar de GET a POST
-    public ResponseEntity<Map<String, Object>> viewUsageStats(@RequestBody DateRangeRequest dateRange) {
-        
-        // Validate date range
-        if (dateRange.getRangoInferior() == null || dateRange.getRangoSuperior() == null || 
-            dateRange.getRangoInferior().isAfter(dateRange.getRangoSuperior())) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Invalid date range"));
-        }
+			
+			return ResponseEntity.ok("Usage log entered successfully");
 
-        // Convert LocalDate to LocalDateTime (start of day and end of day)
-        LocalDateTime startDateTime = dateRange.getRangoInferior().atStartOfDay();
-        LocalDateTime endDateTime = dateRange.getRangoSuperior().atTime(23, 59, 59);
+		} catch (IllegalArgumentException e) {
+			
+			return ResponseEntity.badRequest().body("Invalid data: " + e.getMessage());
 
-        // Query the repository
-        List<Object[]> results = usageLogRepository.countEventsByTypeInDateRange(startDateTime, endDateTime);
+		} catch (DataAccessException e) {
+			
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("Database error: Unable to save usage log");
 
-        // Process results into a structured response
-        Map<Integer, Long> eventCounts = new HashMap<>();
-        eventCounts.put(0, 0L); // VISIT
-        eventCounts.put(1, 0L); // SUCCESS
-        eventCounts.put(2, 0L); // FAIL
+		} catch (Exception e) {
+			
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body("An unexpected error occurred: " + e.getMessage());
+		}
+	}
 
-        for (Object[] result : results) {
-            Integer eventType = ((Number) result[0]).intValue();
-            Long count = ((Number) result[1]).longValue();
-            eventCounts.put(eventType, count);
-        }
+	@PostMapping("/auth/view-stats") 
+	public ResponseEntity<Map<String, Object>> viewUsageStats(@RequestBody DateRangeRequest dateRange) {
 
-        // Build response
-        Map<String, Object> response = new HashMap<>();
-        response.put("visits", eventCounts.get(0));
-        response.put("successes", eventCounts.get(1));
-        response.put("failures", eventCounts.get(2));
-        response.put("startDate", dateRange.getRangoInferior());
-        response.put("endDate", dateRange.getRangoSuperior());
+		
+		if (dateRange.getRangoInferior() == null || dateRange.getRangoSuperior() == null
+				|| dateRange.getRangoInferior().isAfter(dateRange.getRangoSuperior())) {
+			return ResponseEntity.badRequest().body(Map.of("error", "Invalid date range"));
+		}
 
-        return ResponseEntity.ok(response);
-    }
+		
+		LocalDateTime startDateTime = dateRange.getRangoInferior().atStartOfDay();
+		LocalDateTime endDateTime = dateRange.getRangoSuperior().atTime(23, 59, 59);
+
+		
+		List<Object[]> results = usageLogRepository.countEventsByTypeInDateRange(startDateTime, endDateTime);
+
+		
+		Map<Integer, Long> eventCounts = new HashMap<>();
+		eventCounts.put(0, 0L); 
+		eventCounts.put(1, 0L); 
+		eventCounts.put(2, 0L); 
+
+		for (Object[] result : results) {
+			Integer eventType = ((Number) result[0]).intValue();
+			Long count = ((Number) result[1]).longValue();
+			eventCounts.put(eventType, count);
+		}
+
+		
+		Map<String, Object> response = new HashMap<>();
+		response.put("visits", eventCounts.get(0));
+		response.put("successes", eventCounts.get(1));
+		response.put("failures", eventCounts.get(2));
+		response.put("startDate", dateRange.getRangoInferior());
+		response.put("endDate", dateRange.getRangoSuperior());
+
+		return ResponseEntity.ok(response);
+	}
 }

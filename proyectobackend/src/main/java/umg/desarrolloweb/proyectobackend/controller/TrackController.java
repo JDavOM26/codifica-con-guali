@@ -29,13 +29,13 @@ public class TrackController {
 		this.trackRepository = trackRepository;
 	}
 	
-	//ESTE NO
+
 	@GetMapping("/noauth/get-random-tracks")
 	public List<Track> getRandomTracks() {
 		return trackRepository.findRandomTracks(1);
 	}
 	
-	//ESTOS SI
+	
 	
 	@GetMapping("/auth/get-track-user")
 	public List<Track> getTracksByUser(@RequestParam Integer idUser) {
@@ -46,7 +46,7 @@ public class TrackController {
 	public ResponseEntity<Track> saveTrack(@Validated @RequestBody TrackDto trackDto) {
         try {
             Track track;
-            // Update existing track if ID is provided
+           
             if (trackDto.getIdPista() != null) {
                 Optional<Track> existingTrack = trackRepository.findById(trackDto.getIdPista());
                 if (existingTrack.isEmpty()) {
@@ -57,20 +57,20 @@ public class TrackController {
                 track = new Track();
             }
 
-            // Validate configuracion as JSON
+           
             try {
                 new com.fasterxml.jackson.databind.ObjectMapper().readTree(trackDto.getConfiguracion());
             } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
-            // Set fields
+        
             track.setNombre(trackDto.getNombre());
             track.setConfiguracion(trackDto.getConfiguracion());
             track.setFechaCreacion(trackDto.getFechaCreacion() != null ? trackDto.getFechaCreacion() : new Date());
             track.setIdUser(trackDto.getIdUser());
 
-            // Save track
+            
             Track savedTrack = trackRepository.save(track);
             return new ResponseEntity<>(savedTrack, track.getIdPista() == null ? HttpStatus.CREATED : HttpStatus.OK);
         } catch (Exception e) {

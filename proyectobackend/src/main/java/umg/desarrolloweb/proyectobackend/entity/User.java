@@ -45,4 +45,6 @@ public class User {
 	    public enum EventType {
 	        ACTIVE, BLOCKED
 	    }
-	}
+
+	}	
+

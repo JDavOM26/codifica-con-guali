@@ -1,18 +1,17 @@
 package umg.desarrolloweb.proyectobackend.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
+import umg.desarrolloweb.proyectobackend.entity.ActionLog;
 import umg.desarrolloweb.proyectobackend.entity.User;
+import umg.desarrolloweb.proyectobackend.repository.ActionLogRepository;
 import umg.desarrolloweb.proyectobackend.repository.UserRepository;
 import umg.desarrolloweb.proyectobackend.security.JwtTokenUtil;
-
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -22,20 +21,25 @@ import java.util.Date;
 @RequestMapping("/api/noauth")
 public class JwtAuthenticationController {
 
-	@Autowired
-	private AuthenticationManager authenticationManager;
+    private AuthenticationManager authenticationManager;
+    private UserRepository userRepository;
+    private JwtTokenUtil jwtUtils;
+    private final ActionLogRepository actionLogRepository;
 
-	@Autowired
-	private UserRepository userRepository;
+    private static final int MAX_ATTEMPTS = 5;
+    private static final int BLOCK_DURATION_MINUTES = 30;
 
-	@Autowired
-	private PasswordEncoder encoder;
+    public JwtAuthenticationController(
+            AuthenticationManager authenticationManager,
+            UserRepository userRepository,
+            JwtTokenUtil jwtUtils,
+            ActionLogRepository actionLogRepository) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.jwtUtils = jwtUtils;
+        this.actionLogRepository = actionLogRepository;
+    }
 
-	@Autowired
-	private JwtTokenUtil jwtUtils;
-
-	private static final int MAX_ATTEMPTS = 5;
-	private static final int BLOCK_DURATION_MINUTES = 30;
 
 	@PostMapping("/login")
 	public ResponseEntity<?> authenticateUser(@RequestBody User user) {
@@ -75,6 +79,12 @@ public class JwtAuthenticationController {
 
 			UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 			String jwt = jwtUtils.generateToken(userDetails.getUsername());
+			
+			 ActionLog newLog = new ActionLog();
+			    newLog.setIdUser(userFromDb.getIdUser());
+			    newLog.setTimestamp(LocalDateTime.now());
+			    newLog.setAction("LOGIN ID_USER "+ userFromDb.getIdUser());
+			    actionLogRepository.save(newLog);
 
 			LoginResponseDto response = new LoginResponseDto();
 			response.setToken(jwt);

@@ -4,7 +4,7 @@
  COPY src ./src
  RUN mvn clean package -DskipTests
 
- # Etapa de runtime (ejecuta el JAR con Java 21)
+
  FROM eclipse-temurin:21-jdk
  VOLUME /tmp
  COPY --from=build /app/target/proyectobackend-0.0.1-SNAPSHOT.jar app.jar

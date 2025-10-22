@@ -30,7 +30,7 @@ public class JwtTokenUtil {
             this.key = Keys.hmacShaKeyFor(jwtSecret.getBytes(StandardCharsets.UTF_8));
         }
 
-        //Generación de tokens JWT.
+      
         public String generateToken(String username) {
             return Jwts.builder()
                     .subject(username)
@@ -40,32 +40,32 @@ public class JwtTokenUtil {
                     .compact();
         }
 
-       //Extracción de información (como el username) desde un token.
+     
         public String getUsernameFromToken(String token) {
     Jwt<?, ?> jwt = Jwts.parser()
-            .verifyWith(key)               // Verifica la firma usando la clave
-            .build()                       // Construye el parser
-            .parseSignedClaims(token);     // Parsea y verifica
+            .verifyWith(key)              
+            .build()                      
+            .parseSignedClaims(token);    
 
     Claims claims = (Claims) jwt.getPayload();
     return claims.getSubject();
 }
         
         
-    //Validación de tokens (integridad y expiración).
+ 
     public boolean validateJwtToken(String token) {
     try {
         Jwts.parser()
             .verifyWith(key)
             .build()
-            .parseSignedClaims(token);  // Verifica firma y expiración
+            .parseSignedClaims(token); 
 
         return true;
     } catch (ExpiredJwtException e) {
         logger.error("JWT token expirado", e);
         return false;
     } catch (JwtException e) {
-        // Para firma inválida u otro problema
+      
         logger.error("Token JWT inválido", e);
         return false;
     } catch (Exception e) {
